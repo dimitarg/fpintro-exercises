@@ -5,13 +5,9 @@ import static org.example.Util.error;
 public abstract class ConsList<A>
 {
 
-    private static final ConsList<Void> THE_EMPTY_LIST = empty();
-
-
-    @SuppressWarnings("unchecked")
     public static <A> ConsList<A> empty()
     {
-        return (ConsList<A>) THE_EMPTY_LIST;
+        return new Nil<>();
     }
 
     public static <A> ConsList<A> cons(A head, ConsList<A> tail)
