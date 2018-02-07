@@ -4,6 +4,11 @@ public class Util
 {
     public static <A> A notImplemented()
     {
-        throw new RuntimeException("not implemented");
+        throw error("not implemented");
+    }
+
+    public static Error error(String error)
+    {
+        return new Error(error);
     }
 }
