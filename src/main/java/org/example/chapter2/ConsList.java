@@ -1,6 +1,10 @@
 package org.example.chapter2;
 
+import java.util.function.Function;
+import java.util.function.Predicate;
+
 import static org.example.Util.error;
+import static org.example.Util.notImplemented;
 
 public abstract class ConsList<A>
 {
@@ -20,6 +24,41 @@ public abstract class ConsList<A>
     public abstract A head();
 
     public abstract ConsList<A> tail();
+
+    public int length()
+    {
+        return notImplemented();
+    }
+
+    public ConsList<A> append(A a)
+    {
+        return notImplemented();
+    }
+
+    public ConsList<A> reverse()
+    {
+        return notImplemented();
+    }
+
+    public ConsList<A> takeWhile(Predicate<A> predicate)
+    {
+        return notImplemented();
+    }
+
+    public ConsList<A> dropWhile(Predicate<A> predicate)
+    {
+        return notImplemented();
+    }
+
+    public ConsList<A> filter(Predicate<A> predicate)
+    {
+        return notImplemented();
+    }
+
+    public <B> ConsList<B> map(Function<A, B> function)
+    {
+        return notImplemented();
+    }
 
     private static final class Cons<A> extends ConsList<A>
     {
