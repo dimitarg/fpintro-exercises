@@ -1,5 +1,6 @@
 package org.example.chapter3;
 
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -41,25 +42,40 @@ public abstract class ConsList<A>
         return foldLeft((x, y) -> cons(y, x), empty());
     }
 
-
-    public ConsList<A> takeWhile(Predicate<A> predicate)
-    {
-        return notImplemented();
-    }
-
-    public ConsList<A> dropWhile(Predicate<A> predicate)
-    {
-        return notImplemented();
-    }
-
     public ConsList<A> filter(Predicate<A> predicate)
     {
-        return notImplemented();
+        return foldRight((current, result) -> predicate.test(current) ? cons(current, result) : result, empty());
     }
 
     public <B> ConsList<B> map(Function<A, B> function)
     {
-        return notImplemented();
+        return foldRight((current, result) -> cons(function.apply(current), result), empty());
+    }
+
+    public boolean forAll(Predicate<A> predicate)
+    {
+        return foldRight((current, result) -> result && predicate.test(current), true);
+    }
+
+    public boolean exists(Predicate<A> predicate)
+    {
+        return foldRight((current, result) -> result || predicate.test(current), false);
+    }
+
+    public <B> B foldRight2(BiFunction<A, B, B> f, B z)
+    {
+        return this.reverse().foldLeft((result, current) -> f.apply(current, result), z);
+    }
+
+    public static <A> ConsList<A> fromArray(A... array)
+    {
+        ConsList<A> consList = empty();
+        for (int count = array.length - 1; count >= 0; count--)
+        {
+            consList = cons(array[count], consList);
+        }
+
+        return consList;
     }
 
     public <B> B foldLeft(BiFunction<B, A, B> f, B z)
@@ -81,6 +97,43 @@ public abstract class ConsList<A>
 
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+        {
+            return true;
+        }
+
+        if (obj instanceof ConsList<?>)
+        {
+            ConsList<A> other = (ConsList<A>) obj;
+            if (other.isEmpty() && isEmpty())
+            {
+                return true;
+            }
+
+            if (other.isEmpty() || isEmpty())
+            {
+                return false;
+            }
+
+            if (other.head().equals(head()))
+            {
+                return tail().equals(other.tail());
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return isEmpty() ? 0 : Objects.hash(head(), tail());
+    }
+
     private static final class Cons<A> extends ConsList<A>
     {
         public final A head;
@@ -92,22 +145,26 @@ public abstract class ConsList<A>
             this.tail = tail;
         }
 
-        @Override public boolean isEmpty()
+        @Override
+        public boolean isEmpty()
         {
             return false;
         }
 
-        @Override public A head()
+        @Override
+        public A head()
         {
             return head;
         }
 
-        @Override public ConsList<A> tail()
+        @Override
+        public ConsList<A> tail()
         {
             return tail;
         }
 
-        @Override public String toString()
+        @Override
+        public String toString()
         {
             return "Cons{" + "head=" + head + ", tail=" + tail + '}';
         }
@@ -121,22 +178,26 @@ public abstract class ConsList<A>
         {
         }
 
-        @Override public boolean isEmpty()
+        @Override
+        public boolean isEmpty()
         {
             return true;
         }
 
-        @Override public A head()
+        @Override
+        public A head()
         {
             throw error("head() on Nil");
         }
 
-        @Override public ConsList<A> tail()
+        @Override
+        public ConsList<A> tail()
         {
             throw error("tail() on Nil");
         }
 
-        @Override public String toString()
+        @Override
+        public String toString()
         {
             return "Nil()";
         }
