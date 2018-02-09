@@ -2,8 +2,11 @@ package org.example.chapter2;
 
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Predicate;
+
 
 import static org.example.Util.error;
+import static org.example.Util.notImplemented;
 
 public abstract class ConsList<A>
 {
@@ -32,6 +35,7 @@ public abstract class ConsList<A>
     public ConsList<A> append(A element)
     {
         return isEmpty() ? ConsList.cons(element, empty()) : ConsList.cons(head(), tail().append(element));
+
     }
 
     public ConsList<A> reverse()
