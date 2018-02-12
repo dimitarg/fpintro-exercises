@@ -13,6 +13,8 @@ public class ValidationExample
         System.out.println(halfSum("asdf", "14"));
         System.out.println(halfSum("14", "15"));
         System.out.println(halfSum("1", "1"));
+        System.out.println(halfSum("", null));
+
 
 
     }
