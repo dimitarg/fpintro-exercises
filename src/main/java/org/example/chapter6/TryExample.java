@@ -10,20 +10,38 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class TryExample
 {
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws ExecutionException, InterruptedException
     {
-        P1<Validation<Exception, String>> fileContents = getFileContents("/farenheit.txt");
 
-        P1<Validation<Exception, List<Double>>> toCelsiusProgram = fileContents.map(v -> v.map(contents -> farenheit(contents)));
+        P1<Validation<Exception, String>> getFileContentsProgram = getFileContents("/farenheit.txt");
+
+        P1<Validation<Exception, List<Double>>> toCelsiusProgram = getFileContentsProgram.map(v -> v.map(contents -> farenheit(contents)));
 
         // end of the world
-        Validation<Exception, List<Double>> celsiusV = toCelsiusProgram.f(); // toCelsiusProgram.run()
-        System.out.println(celsiusV);
+        List<Double> result = new SyncInterpeter().run(toCelsiusProgram);
+        System.out.println(result);
+
+
+        ExecutorService ex = Executors.newCachedThreadPool();
+        AsyncInterpreter asyncInterpreter = new AsyncInterpreter(ex);
+
+        CompletableFuture<List<Double>> asyncResult = asyncInterpreter.run(toCelsiusProgram);
+
+        List<Double> xs = asyncResult.get();
+
+
+//        asyncInterpreter.run(getFileContents("blaf_nosuch")).get();
+
+
+        ex.shutdown();
 
     }
 
@@ -101,6 +119,31 @@ public class TryExample
         }
 
         return Paths.get(res.toURI());
+    }
+
+    static class SyncInterpeter
+    {
+        public <A> A run(P1<Validation<Exception, A>> program)
+        {
+            return program.f().success();
+        }
+    }
+
+    static class AsyncInterpreter
+    {
+        private final ExecutorService ex;
+
+        public AsyncInterpreter(ExecutorService ex)
+        {
+            this.ex = ex;
+        }
+
+        public <A> CompletableFuture<A> run(P1<Validation<Exception, A>> program)
+        {
+            return CompletableFuture.supplyAsync(
+                    () -> program.f().success()
+            );
+        }
     }
 
 
