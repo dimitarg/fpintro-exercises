@@ -1,4 +1,4 @@
-package org.example.chapter6;
+package org.example.chapter7;
 
 import fj.P1;
 import fj.Try;
@@ -39,6 +39,7 @@ public class TryExample
 
 
 //        asyncInterpreter.run(getFileContents("blaf_nosuch")).get();
+
 
 
         ex.shutdown();
